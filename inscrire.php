@@ -1,58 +1,57 @@
 <?php
 	require 'inc/panierController.php';
-	//require 'inc/config.php'; 
 
-$erreur = "";
-if(isset($_POST['inscrire']) && !empty($_POST['inscrire']))
-{
-	$nom = $_POST['nom'];
-	$prenom = $_POST['prenom'];
-	$email = $_POST['email'];
-	$telephone = $_POST['telephone'];
-	$password = $_POST['password'];
+	$erreur = "";
+	if(isset($_POST['inscrire']) && !empty($_POST['inscrire']))
+	{
+		$nom = $_POST['nom'];
+		$prenom = $_POST['prenom'];
+		$email = $_POST['email'];
+		$telephone = $_POST['telephone'];
+		$password = $_POST['password'];
 
-	$pattern = '#^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{8,}$#';
-	$pattern2 = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
-	
-	//Verifier si email n'existe pas déjà
-    $sql = "SELECT COUNT(email) AS num FROM clients WHERE email = :email";
-    $stmt = $db->prepare($sql);    
-    $stmt->bindValue(':email', $email);
-    $stmt->execute();
-	$row = $stmt->fetch(PDO::FETCH_ASSOC);
-	
-	
-    if($row['num'] > 0)
-		$erreur .= "Email déjà ultilisé<br>";
-	else if(!preg_match($pattern2, $email))
-		$erreur .= "Email n'est pas valide<br>";
-	
-	if($password != $_POST['password2'])
-		$erreur .= "Mot de passe n'est pas identique<br>";
-	else if(!preg_match($pattern, $password))
-		$erreur .= "Mot de passe n'est pas très fort<br>";
+		$pattern = '#^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{8,}$#';
+		$pattern2 = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+		
+		//Verifier si email n'existe pas déjà
+		$sql = "SELECT COUNT(email) AS num FROM clients WHERE email = :email";
+		$stmt = $db->prepare($sql);    
+		$stmt->bindValue(':email', $email);
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		
+		
+		if($row['num'] > 0)
+			$erreur .= "Email déjà ultilisé<br>";
+		else if(!preg_match($pattern2, $email))
+			$erreur .= "Email n'est pas valide<br>";
+		
+		if($password != $_POST['password2'])
+			$erreur .= "Mot de passe n'est pas identique<br>";
+		else if(!preg_match($pattern, $password))
+			$erreur .= "Mot de passe n'est pas très fort<br>";
 
-	if($erreur === ""){
-		$data = [
-			'nom' => $nom,
-			'prenom' => $prenom,
-			'email' => $email,
-			'password' => password_hash($password, PASSWORD_BCRYPT),
-			'telephone' => $telephone,
-		];
-		$sql = "INSERT INTO clients (nom, prenom, email, password, telephone) VALUES (:nom, :prenom, :email, :password, :telephone)";
-		$stt= $db->prepare($sql);
-		if($stt->execute($data))
-		{
-			$_SESSION['client_id'] = $db->lastInsertId();
-			$_SESSION['client_nom'] = $nom;
-			$_SESSION['client_prenom'] = $prenom;
-			$_SESSION['client_email'] = $email;
-			$_SESSION['client_telephone'] = $telephone;
-			header('Location: produits');
+		if($erreur === ""){
+			$data = [
+				'nom' => $nom,
+				'prenom' => $prenom,
+				'email' => $email,
+				'password' => password_hash($password, PASSWORD_BCRYPT),
+				'telephone' => $telephone,
+			];
+			$sql = "INSERT INTO clients (nom, prenom, email, password, telephone) VALUES (:nom, :prenom, :email, :password, :telephone)";
+			$stt= $db->prepare($sql);
+			if($stt->execute($data))
+			{
+				$_SESSION['client_id'] = $db->lastInsertId();
+				$_SESSION['client_nom'] = $nom;
+				$_SESSION['client_prenom'] = $prenom;
+				$_SESSION['client_email'] = $email;
+				$_SESSION['client_telephone'] = $telephone;
+				header('Location: produits');
+			}
 		}
 	}
-}
 
 ?>
 <!DOCTYPE html>

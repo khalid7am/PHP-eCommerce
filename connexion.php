@@ -1,7 +1,5 @@
 <?php
 	require 'inc/panierController.php';
-	//require 'inc/config.php'; 
-
 
 	$erreur = "";
 

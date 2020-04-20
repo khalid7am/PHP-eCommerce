@@ -1,6 +1,5 @@
 <?php
 	require 'inc/panierController.php';
-	//require 'inc/config.php'; 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -203,28 +202,7 @@
 				</div>
 			</div>
 		</div>
-	</section>
-	<hr>
-	<section class="ftco-section-parallax">
-		<div class="parallax-img d-flex align-items-center">
-			<div class="container">
-				<div class="row d-flex justify-content-center py-5">
-					<div class="col-md-7 text-center heading-section ftco-animate">
-						<h2>Abonnez-vous à notre newsletter</h2>
-						<div class="row d-flex justify-content-center mt-5">
-							<div class="col-md-8">
-								<form action="#" class="subscribe-form">
-									<div class="form-group d-flex">
-										<input class="form-control" placeholder="Entrer l'adresse e-mail" type="text"> <input class="submit px-3" type="submit" value="s'abonner">
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+	</section>	
 	<?php require 'inc/footer.php'; ?>
 	<?php require 'inc/foot-tags.php'; ?>
 </body>

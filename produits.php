@@ -1,7 +1,7 @@
 <?php
 	require 'inc/panierController.php';
-	//require 'inc/config.php'; 
 
+	//récupérer tous les produits depuis la base de données
 	$query = $db->prepare("SELECT * FROM produits");
 	$query->execute();
 	$produits = $query->fetchAll();

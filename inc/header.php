@@ -32,7 +32,7 @@
 					<a class="nav-link" href="produits">Produits</a>
 				</li>
 				<li class="nav-item dropdown">
-					<a class="nav-link" href="#">Rapport</a>
+					<a class="nav-link" href="Rapport-MySweater.pdf" download>Rapport</a>
 				</li>
 				<li class="nav-item"><a href="contact" class="nav-link">Contact</a></li>
 				<?php if(isset($_SESSION['client_id'])){ ?>

@@ -1,11 +1,58 @@
 <?php
 	require 'inc/panierController.php';
-	//require 'inc/config.php'; 
 
-	$idp = isset($_GET['idp'])? $_GET['idp'] : header('Location: produits');;
+	//rvérifier si l'id du produit existe dans l'url ou pas!
+	$idp = isset($_GET['idp'])? $_GET['idp'] : header('Location: produits');
+	//récupérer les informations du produit depuis la base de données
 	$query = $db->prepare("SELECT * FROM produits WHERE id='$idp'");
 	$query->execute();
 	$produit = $query->fetch();
+
+	//récupérer les commentaires depuis la base de données
+	$query = $db->prepare("SELECT * FROM commentaires WHERE idProduit='$idp'");
+	$query->execute();
+	$commentaires = $query->fetchAll(PDO::FETCH_ASSOC);
+
+	//récupérer le nombre de commentaires sur le produit
+	$sql = "SELECT COUNT(id) AS num FROM commentaires WHERE idProduit = :idp";
+	$stmt = $db->prepare($sql);
+	$stmt->bindValue(':idp', $idp);
+	$stmt->execute();
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	$nbrCommantaires = $row['num'];
+
+	//ajouter un commentaire
+	if(isset($_POST['ajouter-commentaire']) && !empty($_POST['ajouter-commentaire']))
+	{
+		//récupérer et valider le commentaire
+		$commentaire = trim(htmlspecialchars($_POST['commentaire']));
+		$date = date("Y-m-d h:i:s");
+
+		$data = [
+			'idClient' => $_SESSION['client_id'],
+			'commentaire' => $commentaire,
+			'idProduit' => $idp,
+			'date' => $date,
+		];
+
+		$sql = "INSERT INTO commentaires (idClient, commentaire, idProduit, date) VALUES (:idClient, :commentaire, :idProduit, :date)";
+		$stat= $db->prepare($sql);
+		if($stat->execute($data)) {
+			header("Refresh:0");
+      }
+	}
+
+	//cette fonction pour récupérer le nom et prénom de client
+	function clientNomComplet($idc, $db)
+	{
+		$sql = "SELECT * FROM clients WHERE id = :idc";
+		$stmt = $db->prepare($sql);    
+		$stmt->bindValue(':idc', $idc);
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			
+		return $row['nom'] . " " . $row['prenom'];
+	}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,98 +127,36 @@
 	<section class="ftco-section bg-light">
 		<div class="container">
 			<div class="pt-5 mt-5">
-				<h3 class="mb-5">6 Commentaires</h3>
+				<h3 class="mb-5"><?php echo $nbrCommantaires ?> Commentaires</h3>
 				<ul class="comment-list">
+					<?php foreach ($commentaires as $commentaire) { ?>
 					<li class="comment">
-						<div class="vcard bio"><img alt="Image placeholder" src="images/person_1.png"></div>
+						<div class="vcard bio"><img alt="Image placeholder" src="images/client.png"></div>
 						<div class="comment-body">
-							<h3>Khalid Hamdani</h3>
-							<div class="meta">
-								05 mars 2020 à 12 h 03
-							</div>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-							<p><a class="Répondre" href="#">Répondre</a></p>
+							<h3><?php echo clientNomComplet($commentaire['idClient'], $db) ?></h3>
+							<div class="meta"><?php echo $commentaire['date'] ?></div>
+							<p><?php echo $commentaire['commentaire'] ?></p>
 						</div>
 					</li>
-					<li class="comment">
-						<div class="vcard bio"><img alt="Image placeholder" src="images/person_1.png"></div>
-						<div class="comment-body">
-							<h3>Khalid Hamdani</h3>
-							<div class="meta">
-								05 mars 2020 à 12 h 03
-							</div>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-							<p><a class="Répondre" href="#">Répondre</a></p>
-						</div>
-						<ul class="children">
-							<li class="comment">
-								<div class="vcard bio"><img alt="Image placeholder" src="images/person_1.png"></div>
-								<div class="comment-body">
-									<h3>Khalid Hamdani</h3>
-									<div class="meta">
-										05 mars 2020 à 12 h 03
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-									<p><a class="Répondre" href="#">Répondre</a></p>
-								</div>
-								<ul class="children">
-									<li class="comment">
-										<div class="vcard bio"><img alt="Image placeholder" src="images/person_1.png"></div>
-										<div class="comment-body">
-											<h3>Khalid Hamdani</h3>
-											<div class="meta">
-												05 mars 2020 à 12 h 03
-											</div>
-											<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-											<p><a class="Répondre" href="#">Répondre</a></p>
-										</div>
-										<ul class="children">
-											<li class="comment">
-												<div class="vcard bio"><img alt="Image placeholder" src="images/person_1.png"></div>
-												<div class="comment-body">
-													<h3>Khalid Hamdani</h3>
-													<div class="meta">
-														05 mars 2020 à 12 h 03
-													</div>
-													<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-													<p><a class="Répondre" href="#">Répondre</a></p>
-												</div>
-											</li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-					<li class="comment">
-						<div class="vcard bio"><img alt="Image placeholder" src="images/person_1.png"></div>
-						<div class="comment-body">
-							<h3>Khalid Hamdani</h3>
-							<div class="meta">
-								05 mars 2020 à 12 h 03
-							</div>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-							<p><a class="Répondre" href="#">Répondre</a></p>
-						</div>
-					</li>
+					<?php } ?>
 				</ul>
 				<div class="comment-form-wrap pt-5">
 					<h3 class="mb-5">Laissez un commentaire</h3>
-					<form action="#" class="p-5 bg-light">
-						<div class="form-group">
-							<label for="name">Nom *</label> <input class="form-control" id="name" type="text">
+					<?php if(!isset($_SESSION['client_id'])){ ?>
+						<div class="row justify-content-center">
+							<a class="btn btn-primary py-3 px-4" href="connexion">S'identifer</a>
 						</div>
-						<div class="form-group">
-							<label for="email">Email *</label> <input class="form-control" id="email" type="email">
-						</div>
-						<div class="form-group">
-							<label for="message">Message</label> 
-							<textarea class="form-control" cols="30" id="message" name="" rows="10"></textarea>
-						</div>
-						<div class="form-group">
-							<input class="btn py-3 px-4 btn-primary" type="submit" value="Poster le commentaire">
-						</div>
-					</form>
+					<?php } else { ?>
+						<form action="" method="POST" class="p-5 bg-light">
+							<div class="form-group">
+								<label for="commentaire">Commentaire :</label> 
+								<textarea class="form-control" cols="30" id="commentaire" name="commentaire" rows="5"></textarea>
+							</div>
+							<div class="form-group">
+								<input class="btn py-3 px-4 btn-primary" name="ajouter-commentaire" type="submit" value="Poster le commentaire">
+							</div>
+						</form>
+					<?php } ?>
 				</div>
 			</div>
 		</div>
