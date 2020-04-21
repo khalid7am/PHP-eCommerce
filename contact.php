@@ -1,5 +1,30 @@
 <?php
-	require 'inc/panierController.php';	 
+	require 'inc/panierController.php';
+	
+	//vérifier si le bouton envoyer a été cliqué par le visiteur
+	if(isset($_POST['envoyer-msg']) && !empty($_POST['envoyer-msg'])) {
+
+		//valider les données insérés
+		$nom = trim(htmlspecialchars($_POST['nom']));
+		$email = trim(htmlspecialchars($_POST['email']));
+		$message = trim(htmlspecialchars($_POST['message']));
+
+		$data = [
+			'nom' => $nom,
+			'email' => $email,
+			'message' => $message,
+		];
+
+		//requet pour inserer les données dans la base de données
+		$sql = "INSERT INTO messages (nom, email, message) VALUES (:nom, :email, :message)";
+		$stat= $db->prepare($sql);
+		//vérifier si le message a été enregistré dans la base de données
+		if($stat->execute($data)) {
+			//afficher une alert pour informer le visiteur que son message a été envoyé avec succès
+			echo '<script>alert("Votre message a été bien envoyé")</script>';
+			header("Refresh:0");
+		}
+	}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,21 +71,18 @@
 			</div>
 			<div class="row block-9">
 				<div class="col-md-6 order-md-last d-flex">
-					<form action="#" class="bg-white p-5 contact-form">
+					<form action="" method="POST" class="bg-white p-5 contact-form">
 						<div class="form-group">
-							<input class="form-control" placeholder="Notre nom" type="text">
+							<input class="form-control" name="nom" placeholder="Notre nom" type="text" required>
 						</div>
 						<div class="form-group">
-							<input class="form-control" placeholder="Votre Email" type="text">
+							<input class="form-control" name="email" placeholder="Votre Email" type="text" required>
 						</div>
 						<div class="form-group">
-							<input class="form-control" placeholder="Sujet" type="text">
+							<textarea class="form-control" cols="30" id="" name="message" placeholder="Message" rows="7" required></textarea>
 						</div>
 						<div class="form-group">
-							<textarea class="form-control" cols="30" id="" name="" placeholder="Message" rows="7"></textarea>
-						</div>
-						<div class="form-group">
-							<input class="btn btn-primary py-3 px-5" type="submit" value="Envoyer">
+							<input class="btn btn-primary py-3 px-5" name="envoyer-msg" type="submit" value="Envoyer">
 						</div>
 					</form>
 				</div>
