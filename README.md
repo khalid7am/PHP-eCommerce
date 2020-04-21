@@ -1,4 +1,4 @@
-# PHP eCommerce
+# PHP eCommerce ProjetSessionWebDynamique
 
 
 Travail de session: conception et réalisation d’un site web dynamique E-commerce<br><br>
