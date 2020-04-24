@@ -4,8 +4,8 @@
 Travail de session: conception et réalisation d’un site web dynamique E-commerce<br><br>
 
 Binôme:
-- HAMDANI Khalid
-- ABALA Mariam
+- <b>HAMDANI Khalid</b> (LPII)
+- <b>ABALA Mariam</b> (LPII)
 
 <br><br>
 Rapport sur le projet => <b> Rapport-MySweater.pdf </b> <br>
